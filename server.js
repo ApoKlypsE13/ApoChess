@@ -27,15 +27,17 @@ let players = [
   { name: "player2", used: false, address: "" }
 ];
 
-const sendMessage = message => {
+function sendMessage(message, avoid) {
   for (const player of players) {
-    for (const user of listUsers) {
-      if (user[player.address] !== undefined) {
-        user[player.address].connection.send(JSON.stringify(message));
+    if (avoid === undefined || player.address !== avoid) {
+      for (const user of listUsers) {
+        if (user[player.address] !== undefined) {
+          user[player.address].connection.send(JSON.stringify(message));
+        }
       }
     }
   }
-};
+}
 
 const givePlace = connection => {
   for (const player of players) {
@@ -65,6 +67,13 @@ const firstConnection = connection => {
   sendMessage({ message: "INIT_PLAYERS", data: players });
 };
 
+function checkMessage(connection, { message, data }) {
+  if (message === "MOVE_PIECE") {
+    console.log("my adress LOL : ", connection.remoteAddress);
+    sendMessage({ message, data }, connection.remoteAddress);
+  }
+}
+
 wsServer.on("request", function(request) {
   if (!originIsAllowed(request.origin)) {
     request.reject();
@@ -84,9 +93,8 @@ wsServer.on("request", function(request) {
   connection.on("message", function(message) {
     if (message.type === "utf8") {
       console.log("Received Message: " + message.utf8Data);
-      const answer = JSON.parse(message.utf8Data);
 
-      connection.sendUTF(message.utf8Data);
+      checkMessage(connection, JSON.parse(message.utf8Data));
     }
   });
 

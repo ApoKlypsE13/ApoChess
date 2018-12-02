@@ -2,17 +2,11 @@ import React from "react";
 
 import Board from "../board";
 import Status from "../status";
-import resetPlayers from "../../logic";
+import ButtonGame from "../buttongame";
 
 const style = {
   display: "flex",
   flexDirection: "row"
-};
-
-const styleBtn = {
-  width: "auto",
-  height: "32px",
-  marginLeft: "20px"
 };
 
 class MainIndex extends React.PureComponent {
@@ -24,9 +18,7 @@ class MainIndex extends React.PureComponent {
             <Board />
             <Status {...this.state} />
           </div>
-          <button style={styleBtn} onClick={resetPlayers}>
-            RESET PLAYERS
-          </button>
+          <ButtonGame />
         </div>
       </>
     );

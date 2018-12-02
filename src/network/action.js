@@ -1,5 +1,5 @@
 import * as constant from "./constant";
-import { initPlayers } from "../index";
+import { initPlayers, movePiece } from "../index";
 
 export default function checkMessage(datas) {
   console.log(datas);
@@ -10,6 +10,13 @@ export default function checkMessage(datas) {
         initPlayers(datas.data);
       } catch (e) {
         console.error("Unable to reset players");
+      }
+      break;
+    case constant.MOVE_PIECE:
+      try {
+        movePiece(datas.data);
+      } catch (e) {
+        console.error("Unable to move chesspiece");
       }
       break;
 

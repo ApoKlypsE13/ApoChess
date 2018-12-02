@@ -1,5 +1,7 @@
 import React from "react";
 
+import { movePieceServer } from "../../logic";
+
 let pos1 = 0,
   pos2 = 0,
   pos3 = 0,
@@ -37,6 +39,8 @@ const mouseDown = e => {
 };
 
 const mouseUp = e => {
+  movePieceServer(element.id, { x: element.style.left, y: element.style.top });
+
   document.onmouseup = null;
   document.onmousemove = null;
 };
@@ -54,8 +58,6 @@ const moveMouse = e => {
 };
 
 const Case = ({ value, ind }) => {
-  //const [additional, setAdditional] = useState({});
-
   return (
     <div style={styleCase}>
       <div

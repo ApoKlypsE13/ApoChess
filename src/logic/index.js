@@ -1,5 +1,6 @@
 import { w3cwebsocket } from "websocket";
 import checkMessage from "../network/action";
+import * as constant from "../network/constant";
 
 var client = new w3cwebsocket("ws://localhost:8080/", "echo-protocol");
 
@@ -23,8 +24,14 @@ client.onmessage = function(e) {
   }
 };
 
-export const resetPlayers = () => {
-  client.send(JSON.stringify({ message: "RESET_PLAYERS" }));
+export const movePieceServer = (pieceId, positionXY) => {
+  client.send(
+    JSON.stringify({
+      message: constant.MOVE_PIECE,
+      data: {
+        pieceId,
+        positionXY
+      }
+    })
+  );
 };
-
-export default resetPlayers;
