@@ -52,7 +52,8 @@ const givePlace = connection => {
 };
 
 const leavePlace = address => {
-  for (let player of players) {
+  for (const player of players) {
+    console.log(player, address);
     if (player.address === address) {
       player.used = false;
 
@@ -64,12 +65,18 @@ const leavePlace = address => {
 
 const firstConnection = connection => {
   givePlace(connection);
+
   sendMessage({ message: "INIT_PLAYERS", data: players });
+};
+
+const kickedConnection = ({ remoteAddress }) => {
+  leavePlace(remoteAddress);
+
+  sendMessage({ message: "KICK_PLAYER", data: players });
 };
 
 function checkMessage(connection, { message, data }) {
   if (message === "MOVE_PIECE") {
-    console.log("my adress LOL : ", connection.remoteAddress);
     sendMessage({ message, data }, connection.remoteAddress);
   }
 }
@@ -104,8 +111,11 @@ wsServer.on("request", function(request) {
         connection.remoteAddress
       } disconnected with reason code : ${reasonCode}. Description : ${description}`
     );
-    if (parseInt(reasonCode, 10) === 1001 || 1006) {
-      leavePlace(connection.remoteAddress);
+    if (
+      parseInt(reasonCode, 10) === 1001 ||
+      parseInt(reasonCode, 10) === 1006
+    ) {
+      kickedConnection(connection);
     }
   });
 });

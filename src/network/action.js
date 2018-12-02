@@ -6,6 +6,7 @@ export default function checkMessage(datas) {
 
   switch (datas.message) {
     case constant.INIT_PLAYERS:
+    case constant.KICK_PLAYER:
       try {
         initPlayers(datas.data);
       } catch (e) {
