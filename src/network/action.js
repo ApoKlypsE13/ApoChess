@@ -7,7 +7,7 @@ export default function checkMessage(datas) {
   switch (datas.message) {
     case constant.INIT_PLAYERS:
       try {
-        initPlayers(datas.dataSent);
+        initPlayers(datas.data);
       } catch (e) {
         console.error("Unable to reset players");
       }

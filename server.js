@@ -20,18 +20,19 @@ function originIsAllowed(origin) {
   return true;
 }
 
+const listUsers = [];
+
 let players = [
-  { name: "player1", used: false, address: "", connection: null },
-  { name: "player2", used: false, address: "", connection: null }
+  { name: "player1", used: false, address: "" },
+  { name: "player2", used: false, address: "" }
 ];
 
-const sendMessage = (obj, data) => {
+const sendMessage = message => {
   for (const player of players) {
-    if (player.connection !== null) {
-      console.log(data);
-      const newObj = JSON.stringify(obj);
-      console.log(newObj);
-      player.connection.send(newObj);
+    for (const user of listUsers) {
+      if (user[player.address] !== undefined) {
+        user[player.address].connection.send(JSON.stringify(message));
+      }
     }
   }
 };
@@ -40,19 +41,20 @@ const givePlace = connection => {
   for (const player of players) {
     if (!player.used) {
       player.used = true;
-      player.address = connection.address;
-      player.connection = connection;
+      player.address = connection.remoteAddress;
+
+      listUsers.push({ [connection.remoteAddress]: { connection } });
       break;
     }
   }
 };
 
 const leavePlace = address => {
-  for (const player of players) {
+  for (let player of players) {
     if (player.address === address) {
       player.used = false;
-      player.address = "";
-      player.connection = null;
+
+      listUsers.splice(listUsers.findIndex(() => player.address), 1);
       break;
     }
   }
@@ -60,7 +62,7 @@ const leavePlace = address => {
 
 const firstConnection = connection => {
   givePlace(connection);
-  sendMessage({ messageSent: "INIT_PLAYERS", dataSent: players });
+  sendMessage({ message: "INIT_PLAYERS", data: players });
 };
 
 wsServer.on("request", function(request) {
@@ -94,7 +96,7 @@ wsServer.on("request", function(request) {
         connection.remoteAddress
       } disconnected with reason code : ${reasonCode}. Description : ${description}`
     );
-    if (parseInt(reasonCode, 10) === 1001) {
+    if (parseInt(reasonCode, 10) === 1001 || 1006) {
       leavePlace(connection.remoteAddress);
     }
   });

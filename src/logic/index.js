@@ -16,9 +16,7 @@ client.onclose = function() {
 };
 
 client.onmessage = function(e) {
-  console.log(e)
   if (typeof e.data === "string") {
-    console.log(e.data)
     const answer = JSON.parse(e.data);
 
     checkMessage(answer);
